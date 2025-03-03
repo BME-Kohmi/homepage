@@ -58,19 +58,28 @@ loader.load("Kohmi_animation.glb", (gltf) => {
 });
 
 // Function to play animation
-function playAnimation(index, loop = false, onComplete = null) {
+function playAnimation(
+  index,
+  loop = false,
+  onComplete = null,
+  crossfadeDuration = 0.5
+) {
   if (!mixer || animations.length <= index) return;
 
-  mixer.stopAllAction(); // Stop any previous animations
-  const action = mixer.clipAction(animations[index]);
-  action.reset().play();
+  const currentAction = mixer._actions[0]; // Get the current active action
+  const nextAction = mixer.clipAction(animations[index]);
 
+  if (currentAction) {
+    currentAction.fadeOut(crossfadeDuration); // Fade out current action over the specified duration
+  }
+
+  nextAction.reset().fadeIn(crossfadeDuration).play(); // Fade in next action
   if (loop) {
-    action.loop = THREE.LoopRepeat; // Play forever
+    nextAction.loop = THREE.LoopRepeat; // Play forever
   } else {
-    action.loop = THREE.LoopOnce; // Play once
-    action.clampWhenFinished = true;
-    action.onFinish = onComplete;
+    nextAction.loop = THREE.LoopOnce; // Play once
+    nextAction.clampWhenFinished = true;
+    nextAction.onFinish = onComplete;
   }
 }
 
@@ -86,10 +95,13 @@ function animate() {
     } else {
       fadeInHeader(); // Add text after the animation
       cameraMoving = false;
-      playAnimation(5, false, () => {
-        console.log("Animation finished!");
-        playAnimation(2, true); // Play anim 3, then loop anim 2
-      });
+      // Play animation after camera movement is done, add a delay if necessary
+      setTimeout(() => {
+        playAnimation(5, false, () => {
+          console.log("Animation finished!");
+          playAnimation(2, true); // Play anim 3, then loop anim 2
+        });
+      }, 500); // Delay before starting the animation (500ms)
     }
   }
 
