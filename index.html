@@ -2,21 +2,72 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>My first three.js app</title>
+    <title>Kohmi</title>
     <style>
-      body {
+      @font-face {
+        font-family: "Oxanium";
+        src: url("public/Oxanium-VariableFont_wght.ttf");
+      }
+
+      @font-face {
+        font-family: "Nunito";
+        src: url("public/Nunito-Italic-VariableFont_wght.ttf");
+      }
+
+      body,
+      html {
         margin: 0;
+        font-family: Arial, sans-serif;
+        scroll-behavior: smooth;
       }
 
       canvas {
         display: block;
         height: 100vh;
         width: 100vw;
+        background-color: #fefefe;
+      }
+
+      /* Header styles */
+      #header {
+        font-family: "Oxanium";
+        font-weight: 600;
+        top: 6dvh; /* Adjust to your preferred position from the top */
+        pointer-events: none; /* Prevent interaction */
+        font-size: 17em;
+        color: #c72426;
+      }
+
+      #footer {
+        font-family: "Nunito";
+        bottom: 3dvh;
+        color: #fefefe;
+      }
+
+      .fade-in {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%); /* Center horizontally */
+        font-size: 2em;
+        color: white;
+        opacity: 0;
+        transition: opacity 1s ease-in-out; /* Fade-in effect */
+        z-index: 10;
+      }
+
+      .content {
+        background-color: red;
+        width: 100dvw;
+        height: 100dvh;
       }
     </style>
   </head>
   <body>
     <canvas id="canvas"></canvas>
+    <div class="fade-in" id="header">Kohmi</div>
+    <a href="#content" class="fade-in" id="footer">Learn More</a>
+
+    <div id="content" class="content"></div>
     <script type="module" src="/main.js"></script>
   </body>
 </html>
