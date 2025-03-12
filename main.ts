@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
+let scrollPercent;
 // Scene setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -31,6 +32,17 @@ let endPosition = new THREE.Vector3(10, 0, 0); // Will update after loading
 let progress = 0; // Animation progress
 let cameraMoving = true;
 let textAdded = false; // Track if text has been added
+
+document.body.onscroll = () => {
+  //calculate the current scroll progress as a percentage
+  scrollPercent =
+    ((document.documentElement.scrollTop || document.body.scrollTop) /
+      ((document.documentElement.scrollHeight || document.body.scrollHeight) -
+        document.documentElement.clientHeight)) *
+    100;
+  document.getElementById("scrollProgress").innerText =
+    "Scroll Progress : " + scrollPercent.toFixed(2);
+};
 
 // Load GLB model
 const loader = new GLTFLoader();
@@ -93,7 +105,7 @@ function animate() {
       camera.position.lerpVectors(startPosition, endPosition, progress);
       camera.lookAt(0, 0, 0);
     } else {
-      fadeInHeader(); // Add text after the animation
+      // fadeInHeader(); // Add text after the animation
       cameraMoving = false;
       // Play animation after camera movement is done, add a delay if necessary
       setTimeout(() => {
@@ -107,10 +119,7 @@ function animate() {
 
   function fadeInHeader() {
     const header = document.getElementById("header");
-    header.style.opacity = 1; // Trigger fade-in effect by changing opacity to 1
-    const footer = document.getElementById("footer");
-    footer.style.opacity = 1; // Trigger fade-in effect by changing opacity to 1
-    document.body.style.overflow = "auto"; // Enable scrolling
+    header.style.opacity = "1"; // Trigger fade-in effect by changing opacity to 1
   }
 
   // Update animation mixer if exists
