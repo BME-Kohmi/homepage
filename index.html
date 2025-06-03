@@ -20,20 +20,31 @@
         margin: 0;
         font-family: Arial, sans-serif;
         scroll-behavior: smooth;
+        overflow-x: hidden;
       }
 
       canvas {
-        display: block;
-        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
+
+      main {
         width: 100vw;
-        background-color: #fefefe;
+        height: 800vw;
+        z-index: 99;
+        position: absolute;
+        justify-content: center;
+        text-align: center;
+        pointer-events: none;
       }
 
       /* Header styles */
       #header {
         font-family: "Oxanium";
         font-weight: 600;
-        top: 6dvh; /* Adjust to your preferred position from the top */
+        position: absolute;
+        top: 0.01dvh;
         pointer-events: none; /* Prevent interaction */
         font-size: 10em;
         color: #c72426;
@@ -42,18 +53,30 @@
       .fade-in {
         position: absolute;
         left: 50%;
-        transform: translateX(-50%); /* Center horizontally */
+        transform: translateX(-50%);
         font-size: 2em;
         color: white;
         opacity: 0;
-        transition: opacity 1s ease-in-out; /* Fade-in effect */
+        transition: opacity 1s ease-in-out;
         z-index: 10;
+      }
+
+      #scrollProgress {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        z-index: 99;
+        font-size: 3vh;
+        color: red;
       }
     </style>
   </head>
   <body>
-    <canvas id="canvas"></canvas>
-    <div class="fade-in" id="header">Hi, I'm Kohmi!</div>
+    <span id="scrollProgress"></span>
+    <main>
+      <h1 class="fade-in" id="header">Hi, I'm Kohmi!</h1>
+    </main>
+
     <script type="module" src="main.ts"></script>
   </body>
 </html>

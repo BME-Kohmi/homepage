@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
-let scrollPercent;
 // Scene setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -10,12 +10,15 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-const canvas = document.getElementById("canvas");
-const canvasWidth = canvas.clientWidth;
-const canvasHeight = canvas.clientHeight;
-const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+
+const renderer = new THREE.WebGLRenderer();
+// const controls = new OrbitControls(camera, renderer.domElement);
+// controls.addEventListener("change", () => {
+//   console.log("Camera position:", camera.position);
+// });
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(canvasWidth, canvasHeight);
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
 // Lighting
 const light = new THREE.DirectionalLight(0xffffff, 1);
@@ -30,24 +33,33 @@ let animations = [];
 let startPosition = new THREE.Vector3(0, 15, -30); // Start far behind
 let endPosition = new THREE.Vector3(10, 0, 0); // Will update after loading
 let progress = 0; // Animation progress
-let cameraMoving = true;
-let textAdded = false; // Track if text has been added
 
-document.body.onscroll = () => {
-  //calculate the current scroll progress as a percentage
-  scrollPercent =
-    ((document.documentElement.scrollTop || document.body.scrollTop) /
-      ((document.documentElement.scrollHeight || document.body.scrollHeight) -
-        document.documentElement.clientHeight)) *
-    100;
-  document.getElementById("scrollProgress").innerText =
-    "Scroll Progress : " + scrollPercent.toFixed(2);
-};
+// Camera frames
+let cameraKeyframes = [];
+
+function updateCameraByScroll(scrollPercent: number) {
+  // Find which two keyframes we're between
+  for (let i = 0; i < cameraKeyframes.length - 1; i++) {
+    const kfA = cameraKeyframes[i];
+    const kfB = cameraKeyframes[i + 1];
+    if (scrollPercent >= kfA.scroll && scrollPercent <= kfB.scroll) {
+      const t = (scrollPercent - kfA.scroll) / (kfB.scroll - kfA.scroll);
+
+      // Interpolate position and target
+      camera.position.lerpVectors(kfA.position, kfB.position, t);
+      const target = new THREE.Vector3().lerpVectors(kfA.target, kfB.target, t);
+      camera.lookAt(target);
+      break;
+    }
+  }
+}
+
+let model = new THREE.Group<THREE.Object3DEventMap>();
 
 // Load GLB model
 const loader = new GLTFLoader();
 loader.load("Kohmi_animation.glb", (gltf) => {
-  const model = gltf.scene;
+  model = gltf.scene;
   console.log(model);
   scene.add(model);
   model.position.set(0, 0, 0); // Adjust model position if needed
@@ -58,9 +70,48 @@ loader.load("Kohmi_animation.glb", (gltf) => {
   const bbox = new THREE.Box3().setFromObject(model);
   const modelHeight = bbox.max.y - bbox.min.y;
 
+  cameraKeyframes = [
+    {
+      // Start: full body
+      position: new THREE.Vector3(12.5, modelHeight * 0.2, 0),
+      target: new THREE.Vector3(0, 0, 0), // Look at model center
+      scroll: 0,
+    },
+    {
+      // Close to ear
+      position: new THREE.Vector3(2.22, 1.48, 0.49),
+      target: new THREE.Vector3(1.3, 1.5, 0.2), // Approximate ear position
+      scroll: 25,
+    },
+    {
+      // Transition to torso
+      position: new THREE.Vector3(5.18, 0.93, 0.21),
+      target: new THREE.Vector3(0, modelHeight * 0.3, 0),
+      scroll: 37,
+    },
+    {
+      // Next to torso
+      position: new THREE.Vector3(2.85, 0, 1),
+      target: new THREE.Vector3(0, 0, -0.2),
+      scroll: 50,
+    },
+    {
+      // Next to legs
+      position: new THREE.Vector3(-2.5, -1, 2),
+      target: new THREE.Vector3(0, -0.7, -0.2), // Look at legs
+      scroll: 75,
+    },
+    {
+      // Final shot (full body)
+      position: new THREE.Vector3(12.5, modelHeight * 0.2, 0),
+      target: new THREE.Vector3(0, 0, 0), // Look at model center
+      scroll: 100,
+    },
+  ];
+
   model.position.y = -bbox.min.y * 4.5; // Center model vertically
 
-  endPosition.set(9.5, modelHeight * 0.2, 0); // Position in front, slightly above center
+  endPosition.set(12.5, modelHeight * 0.2, 0); // Position in front, slightly above center
 
   // Store animations
   if (gltf.animations.length > 0) {
@@ -95,26 +146,51 @@ function playAnimation(
   }
 }
 
+function render() {
+  renderer.render(scene, camera);
+}
+
+window.addEventListener("resize", onWindowResize, false);
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  render();
+}
+
+let scrollPercent = 0;
+
+window.addEventListener("scroll", () => {
+  scrollPercent =
+    ((document.documentElement.scrollTop || document.body.scrollTop) /
+      ((document.documentElement.scrollHeight || document.body.scrollHeight) -
+        document.documentElement.clientHeight)) *
+    100;
+  document.getElementById("scrollProgress").innerText =
+    "Scroll Progress : " + scrollPercent.toFixed(2);
+});
+
+let animationPlayed = false;
+
 // Animation loop
 function animate() {
-  requestAnimationFrame(animate);
+  requestAnimationFrame(animate); // Loop
 
-  if (cameraMoving) {
-    if (progress < 1) {
-      progress += 0.008; // Adjust speed by changing this value
-      camera.position.lerpVectors(startPosition, endPosition, progress);
-      camera.lookAt(0, 0, 0);
-    } else {
-      // fadeInHeader(); // Add text after the animation
-      cameraMoving = false;
-      // Play animation after camera movement is done, add a delay if necessary
-      setTimeout(() => {
-        playAnimation(5, false, () => {
-          console.log("Animation finished!");
-          playAnimation(2, true); // Play anim 3, then loop anim 2
-        });
-      }, 500); // Delay before starting the animation (500ms)
+  if (progress < 1) {
+    // Camera is still moving
+    progress += 0.008; // Adjust speed by changing this value
+    camera.position.lerpVectors(startPosition, endPosition, progress);
+    camera.lookAt(0, 0, 0);
+  } else {
+    // Play animation after camera movement is done, add a delay if necessary
+    if (!animationPlayed) {
+      playAnimation(5, false, () => {
+        console.log("Animation 0 completed");
+      });
+      animationPlayed = true;
     }
+    fadeInHeader();
+    updateCameraByScroll(scrollPercent);
   }
 
   function fadeInHeader() {
@@ -124,6 +200,7 @@ function animate() {
 
   // Update animation mixer if exists
   if (mixer) mixer.update(0.016); // 0.016 ~ 1/60 for smooth 60 FPS animation
-  renderer.render(scene, camera);
+  render();
 }
+window.scrollTo({ top: 0, behavior: "smooth" });
 animate();
