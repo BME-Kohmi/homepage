@@ -4,5 +4,5 @@ export default defineConfig({
   build: {
     outDir: "dist",
   },
-  base: "/<REPO>/",
+  base: "/homepage/",
 });
