@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" class="noscroll">
+  <head>
+    <meta charset="utf-8" />
+    <title>Kohmi</title>
+    <link rel="icon" type="image/x-icon" href="/KohmiLogo.ico" />
+    <style>
+      @font-face {
+        font-family: "Oxanium";
+        src: url("/Oxanium-VariableFont_wght.ttf");
+      }
+
+      @font-face {
+        font-family: "Nunito";
+        src: url("/Nunito-Regular.ttf");
+      }
+
+      html.noscroll,
+      body.noscroll {
+        overflow: hidden;
+        scrollbar-width: none; /* Firefox */
+      }
+      html.noscroll::-webkit-scrollbar,
+      body.noscroll::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
+      }
+
+      body,
+      html {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+      }
+
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: #c72426;
+        background: linear-gradient(
+          45deg,
+          rgba(199, 36, 38, 1) 0%,
+          rgba(160, 57, 100, 1) 33%,
+          rgba(38, 52, 99, 1) 100%,
+          rgba(100, 63, 133, 1) 66%
+        );
+      }
+
+      main {
+        width: 100vw;
+        height: 1000vw;
+        z-index: 99;
+        position: absolute;
+        justify-content: center;
+        text-align: center;
+        pointer-events: none;
+      }
+
+      .fade-in {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 2.5em;
+        color: #fefefe;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      #header {
+        font-family: "Oxanium";
+        font-weight: 600;
+        top: 30px;
+        font-size: 8em;
+        width: 100%;
+        margin: 0;
+      }
+
+      p {
+        font-family: "Nunito";
+        font-size: 8em;
+      }
+
+      #p-1 {
+        top: 9vh;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+      }
+
+      #p-2 {
+        top: 50%;
+        transform: translateY(-50%);
+        left: 35vw;
+        width: 55%;
+      }
+
+      #p-3 {
+        top: 50%;
+        transform: translateY(-50%);
+        left: 10vw;
+        width: 43%;
+      }
+
+      /* Header: One line for screens wider than 575px */
+      @media (min-width: 576px) {
+        #header {
+          white-space: nowrap;
+        }
+      }
+
+      /* p-1: More on top for screens wider than 575px */
+      @media (min-width: 576px) {
+        #p-1 {
+          top: 3vh;
+        }
+      }
+
+      /* p-2 and p-3: Move further to the right/left for screens wider than 675px */
+      @media (min-width: 676px) {
+        #p-2 {
+          left: 45vw;
+          width: 45%;
+        }
+        #p-3 {
+          left: 5vw;
+          width: 40%;
+        }
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/index-B9jFOAlL.js"></script>
+  </head>
+  <body class="noscroll">
+    <main>
+      <h1 class="fade-in" id="header">Hi, ich bin Kohmi!</h1>
+      <p class="fade-in" id="p-1">
+        Ich wurde von Studierenden des Studiengangs Media Engineering an der TH
+        Nürnberg ins Leben gerufen, um dir auf spielerische Weise zu zeigen, was
+        dich im Studium erwartet. Gemeinsam mit mir kannst du entdecken, was
+        Media Engineering ausmacht, kreativ, digital und ganz ohne trockene
+        Theorie.
+      </p>
+      <p class="fade-in" id="p-2">
+        Ich begleite dich durch kleine Aufgaben, bei denen du selbst
+        ausprobieren kannst, was im Studium wichtig ist. Dabei lernst du erste
+        Grundlagen kennen und bekommst ein Gefühl dafür, ob Media Engineering zu
+        dir passt. Keine Sorge, es geht nicht ums Perfektsein, sondern ums
+        Entdecken!
+      </p>
+      <p class="fade-in" id="p-3">
+        Du hast Fragen zum Studium? Super! Ich bin da, um sie dir zu
+        beantworten: Was lernt man im Studiengang? Was sollte ich mitbringen?
+        Wie läuft der Alltag ab? Frag einfach drauflos und ich helfe dir gern
+        weiter und zeige dir, wie vielseitig und spannend Media Engineering
+        wirklich ist.
+      </p>
+    </main>
+
+  </body>
+</html>
